@@ -1,0 +1,29 @@
+{
+  "lib/chainlink": {
+    "rev": "80d7fa9f864bb61983caae762fd3f9f586c5a75b"
+  },
+  "lib/chainlink-brownie-contracts": {
+    "tag": {
+      "name": "0.6.1",
+      "rev": "c6d0ca512f1b09d93bc81415d246dbee7e5c6894"
+    }
+  },
+  "lib/chainlink-evm": {
+    "tag": {
+      "name": "v0.3.3",
+      "rev": "793106cd598da8b2762958880300787b0b361fa1"
+    }
+  },
+  "lib/forge-std": {
+    "tag": {
+      "name": "v1.10.0",
+      "rev": "8bbcf6e3f8f62f419e5429a0bd89331c85c37824"
+    }
+  },
+  "lib/openzeppelin-contracts": {
+    "tag": {
+      "name": "v5.0.1",
+      "rev": "01ef448981be9d20ca85f2faf6ebdf591ce409f3"
+    }
+  }
+}
