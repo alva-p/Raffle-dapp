@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useConnect, useDisconnect, useAccount } from "wagmi";
+import type { Connector } from 'wagmi';
 
 export default function ConnectButton() {
   const { address, isConnected } = useAccount();
@@ -8,12 +9,12 @@ export default function ConnectButton() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleConnect = async (connector: any) => {
+  const handleConnect = async (connector: Connector) => {
     try {
       await connectAsync({ connector });
       setIsOpen(false); // cerrar menú en mobile
-    } catch (err: any) {
-      if (err?.message?.includes("User rejected")) {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message?.includes("User rejected")) {
         console.log("❌ User rejected connection");
       } else {
         console.error("Unexpected error:", err);
