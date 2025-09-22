@@ -5,7 +5,7 @@ A fully decentralized lottery system built on Ethereum with Chainlink VRF for pr
 ![Lottery DApp](https://img.shields.io/badge/Ethereum-Sepolia-blue) ![Solidity](https://img.shields.io/badge/Solidity-^0.8.24-blue) ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Chainlink](https://img.shields.io/badge/Chainlink-VRF%20V2-orange)
 
 ## 🚀 **Live Demo**
-🌐 **Frontend:** [Live on v0](your-v0-url-here)  
+🌐 **Frontend:** [Live on v0](https://raffle-dapp-five.vercel.app/)  
 ⚡ **Smart Contracts:** Deployed on Sepolia Testnet  
 📄 **Factory Contract:** [`0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE`](https://sepolia.etherscan.io/address/0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE)
 
