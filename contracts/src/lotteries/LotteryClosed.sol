@@ -63,4 +63,10 @@ contract LotteryClosed is LotteryBase {
             winners.push(participants[winnerIndex]);
         }
     }
+
+    /// @notice Reembolso para lotería cerrada (sin dinero involucrado)
+    function _refundParticipants() internal pure override {
+        // LotteryClosed normalmente no maneja dinero, así que no hace nada
+        return;
+    }
 }

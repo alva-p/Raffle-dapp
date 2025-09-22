@@ -6,10 +6,20 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBa
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 
 import {LotteryOpen} from "../src/lotteries/LotteryOpen.sol";
+import {LotteryPrivate} from "../src/lotteries/LotteryPrivate.sol";
+import {VRFManager} from "./VRFManager.sol";
+
+interface ILotteryBase {
+    function setVRFManager(address _vrfManager) external;
+}
 
 /// @title LotteryFactory
 /// @notice Despliega loterías y gestiona las llamadas de VRF
 contract LotteryFactory is VRFConsumerBaseV2, Ownable {
+    // NEW: VRFManager centralizado
+    VRFManager public vrfManager;
+    
+    // LEGACY: Mantener para compatibilidad
     VRFCoordinatorV2Interface public immutable COORDINATOR;
     bytes32 public keyHash;
     uint64  public subscriptionId;
@@ -60,6 +70,39 @@ contract LotteryFactory is VRFConsumerBaseV2, Ownable {
                 ticketPrice
             )
         );
+        
+        // NEW: Configurar VRFManager si está disponible
+        if (address(vrfManager) != address(0)) {
+            ILotteryBase(lot).setVRFManager(address(vrfManager));
+        }
+        
+        isLottery[lot] = true;
+        allLotteries.push(lot);
+        emit LotteryCreated(msg.sender, lot);
+    }
+
+    function createLotteryPrivate(
+        LotteryPrivate.Currency currency,
+        address token,
+        uint256 ticketPrice
+    ) external returns (address lot) {
+        lot = address(
+            new LotteryPrivate(
+                currency,
+                token,
+                ticketPrice,
+                msg.sender,
+                address(this), // Factory address
+                address(COORDINATOR),
+                subscriptionId
+            )
+        );
+        
+        // NEW: Configurar VRFManager si está disponible
+        if (address(vrfManager) != address(0)) {
+            ILotteryBase(lot).setVRFManager(address(vrfManager));
+        }
+        
         isLottery[lot] = true;
         allLotteries.push(lot);
         emit LotteryCreated(msg.sender, lot);
@@ -87,5 +130,39 @@ contract LotteryFactory is VRFConsumerBaseV2, Ownable {
         require(isLottery[lot], "Unknown req");
         (bool ok,) = lot.call(abi.encodeWithSignature("fulfillRandomWords(uint256,uint256[])", requestId, randomWords));
         require(ok, "Callback failed");
+    }
+
+    /// @notice Configurar VRFManager (solo owner)
+    /// @param _vrfManager Dirección del contrato VRFManager
+    function setVRFManager(address _vrfManager) external onlyOwner {
+        vrfManager = VRFManager(_vrfManager);
+        
+        // Autorizar este factory en el VRFManager
+        if (address(vrfManager) != address(0)) {
+            // El VRFManager debe tener una función para autorizar este factory
+            // Esto se hará manualmente después del deploy
+        }
+    }
+
+    /// @notice Configurar VRFManager en loterías existentes (solo owner)
+    /// @param _vrfManager Dirección del VRFManager
+    /// @param startIndex Índice inicial para actualizar (para evitar out of gas)
+    /// @param endIndex Índice final para actualizar
+    function updateExistingLotteries(address _vrfManager, uint256 startIndex, uint256 endIndex) external onlyOwner {
+        require(endIndex <= allLotteries.length, "Invalid range");
+        require(startIndex <= endIndex, "Invalid range");
+        
+        for (uint256 i = startIndex; i < endIndex; i++) {
+            try ILotteryBase(allLotteries[i]).setVRFManager(_vrfManager) {
+                // Success
+            } catch {
+                // Skip failed updates
+            }
+        }
+    }
+
+    /// @notice Get VRFManager address
+    function getVRFManager() external view returns (address) {
+        return address(vrfManager);
     }
 }

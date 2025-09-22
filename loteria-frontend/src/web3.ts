@@ -10,7 +10,7 @@ import { injected, metaMask } from 'wagmi/connectors';
 export const wagmiConfig = createConfig({
   chains: [sepolia],
   transports: {
-    [sepolia.id]: http(import.meta.env.VITE_RPC_URL || 'https://rpc.sepolia.org'),
+    [sepolia.id]: http(import.meta.env.VITE_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com'),
   },
  connectors: [
   metaMask(),

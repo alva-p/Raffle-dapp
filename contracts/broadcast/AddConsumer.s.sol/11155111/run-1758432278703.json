@@ -1,0 +1,50 @@
+{
+  "transactions": [
+    {
+      "hash": "0xf2b6047b5ad2f52c94810db7cbfad5e690abecdfd99d1fd250e61b9c2f0293a6",
+      "transactionType": "CALL",
+      "contractName": null,
+      "contractAddress": "0x8103b0a8a00be2ddc778e6e7eaa21791cd364625",
+      "function": "addConsumer(uint64,address)",
+      "arguments": [
+        "12478",
+        "0xA917BBaEaCBA1a830e60869b34A5bbd737465DD1"
+      ],
+      "transaction": {
+        "from": "0xbf9a40bf3eeb8c0c9bad4a9a8ad23bed2fa8fd78",
+        "to": "0x8103b0a8a00be2ddc778e6e7eaa21791cd364625",
+        "gas": "0xa6c4",
+        "value": "0x0",
+        "input": "0x7341c10c00000000000000000000000000000000000000000000000000000000000030be000000000000000000000000a917bbaeacba1a830e60869b34a5bbd737465dd1",
+        "nonce": "0x62",
+        "chainId": "0xaa36a7"
+      },
+      "additionalContracts": [],
+      "isFixedGasLimit": false
+    }
+  ],
+  "receipts": [
+    {
+      "status": "0x1",
+      "cumulativeGasUsed": "0x1678c2c",
+      "logs": [],
+      "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "type": "0x2",
+      "transactionHash": "0xf2b6047b5ad2f52c94810db7cbfad5e690abecdfd99d1fd250e61b9c2f0293a6",
+      "transactionIndex": "0x27",
+      "blockHash": "0x0ec1a558ddca84855f4b4dc4c6bc9ebfc27b8b765b157468fa25e0923f651962",
+      "blockNumber": "0x8d17de",
+      "gasUsed": "0x78bd",
+      "effectiveGasPrice": "0x10fed3",
+      "from": "0xbf9a40bf3eeb8c0c9bad4a9a8ad23bed2fa8fd78",
+      "to": "0x8103b0a8a00be2ddc778e6e7eaa21791cd364625",
+      "contractAddress": null
+    }
+  ],
+  "libraries": [],
+  "pending": [],
+  "returns": {},
+  "timestamp": 1758432278703,
+  "chain": 11155111,
+  "commit": "721ddb9"
+}

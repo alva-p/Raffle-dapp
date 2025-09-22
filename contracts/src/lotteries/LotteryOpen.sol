@@ -82,5 +82,67 @@ contract LotteryOpen is LotteryBase {
             uint256 winnerIndex = uint256(keccak256(abi.encode(randomWord, i))) % participants.length;
             winners.push(participants[winnerIndex]);
         }
+
+        // 🎯 TRANSFERIR PREMIO AUTOMÁTICAMENTE
+        _transferPrizes();
+    }
+
+    /// @notice Transferir premios a los ganadores
+    function _transferPrizes() internal {
+        if (winners.length == 0) return;
+        
+        if (CURRENCY == Currency.NATIVE) {
+            // Para ETH: repartir todo el balance entre ganadores
+            uint256 totalPrize = address(this).balance;
+            uint256 prizePerWinner = totalPrize / winners.length;
+            
+            for (uint256 i = 0; i < winners.length; i++) {
+                (bool success, ) = payable(winners[i]).call{value: prizePerWinner}("");
+                require(success, "Prize transfer failed");
+            }
+        } else {
+            // Para Tokens: repartir todo el balance entre ganadores
+            uint256 totalPrize = IERC20(TOKEN).balanceOf(address(this));
+            uint256 prizePerWinner = totalPrize / winners.length;
+            
+            for (uint256 i = 0; i < winners.length; i++) {
+                IERC20(TOKEN).safeTransfer(winners[i], prizePerWinner);
+            }
+        }
+    }
+
+    /// @notice Reclamar premio manualmente (para loterias ya completadas sin transferencia automatica)
+    function claimPrize() external {
+        require(lotteryState == State.Completed, "Lottery not completed");
+        require(_isWinner(msg.sender), "Not a winner");
+        
+        // Verificar que hay fondos disponibles
+        if (CURRENCY == Currency.NATIVE) {
+            require(address(this).balance > 0, "No funds available");
+        } else {
+            require(IERC20(TOKEN).balanceOf(address(this)) > 0, "No funds available");
+        }
+        
+        // Transferir premio
+        _transferPrizes();
+    }
+    
+    /// @notice Verificar si una direccion es ganadora
+    function _isWinner(address user) internal view returns (bool) {
+        for (uint256 i = 0; i < winners.length; i++) {
+            if (winners[i] == user) return true;
+        }
+        return false;
+    }
+
+    /// @notice Reembolsar a todos los participantes cuando se cancela
+    function _refundParticipants() internal override {
+        if (CURRENCY != Currency.NATIVE) return; // Solo para ETH por simplicidad
+        
+        uint256 refundAmount = TICKET_PRICE;
+        for (uint256 i = 0; i < participants.length; i++) {
+            (bool success, ) = payable(participants[i]).call{value: refundAmount}("");
+            require(success, "Refund failed");
+        }
     }
 }
