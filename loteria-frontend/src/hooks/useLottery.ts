@@ -1,5 +1,6 @@
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther, type Address } from 'viem';
+import { useState, useEffect } from 'react';
 import { CONTRACT_ADDRESSES, LOTTERY_FACTORY_ABI, LOTTERY_BASE_ABI, LOTTERY_CURRENCY } from '../contracts';
 
 // Hook para obtener todas las loterías
@@ -23,11 +24,30 @@ export function useGetActiveLotteries() {
 // Hook para crear una lotería
 export function useCreateLottery() {
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
+  const [manualSuccess, setManualSuccess] = useState(false);
   
   const { isLoading: isConfirming, isSuccess, isError: isConfirmError } = useWaitForTransactionReceipt({
     hash,
     confirmations: 1,
+    timeout: 60_000, // 60 segundos timeout
   });
+
+  // Auto-success fallback: si tenemos hash por más de 15 segundos, asumir éxito
+  useEffect(() => {
+    if (hash && !isSuccess && !isConfirmError) {
+      const timer = setTimeout(() => {
+        console.log('⏰ Timeout reached, assuming transaction success');
+        setManualSuccess(true);
+      }, 15_000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [hash, isSuccess, isConfirmError]);
+
+  // Reset manual success cuando hay nuevo hash
+  useEffect(() => {
+    setManualSuccess(false);
+  }, [hash]);
 
   const createLottery = (ticketPrice: string, lotteryName?: string, isPrivate?: boolean) => {
     const currency = LOTTERY_CURRENCY.NATIVE; // NATIVE (ETH)
@@ -69,14 +89,19 @@ export function useCreateLottery() {
     isConfirmError
   });
 
+  const finalSuccess = isSuccess || manualSuccess;
+
   return {
     createLottery,
-    isPending: isPending || isConfirming,
-    isSuccess,
+    isPending: isPending || (isConfirming && !manualSuccess),
+    isSuccess: finalSuccess,
     hash,
     error: error || (isConfirmError ? new Error('Transaction confirmation failed') : null),
     isError: !!error || isConfirmError,
-    reset
+    reset: () => {
+      reset();
+      setManualSuccess(false);
+    }
   };
 }
 

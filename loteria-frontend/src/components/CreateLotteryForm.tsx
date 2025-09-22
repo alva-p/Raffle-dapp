@@ -202,6 +202,19 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
                 Hash: {hash.slice(0, 10)}...{hash.slice(-8)}
               </div>
               <div className="text-xs mt-1">Waiting for confirmation...</div>
+              <div className="mt-2 pt-2 border-t border-blue-500/20">
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-300 hover:text-blue-100 underline"
+                >
+                  View on Etherscan
+                </a>
+                <div className="text-xs text-gray-400 mt-1">
+                  If stuck for more than 30s, check Etherscan. If confirmed, close and refresh.
+                </div>
+              </div>
             </div>
           )}
           
@@ -214,6 +227,13 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
           >
             {isPending ? 'Creating Lottery...' : 'Create Lottery'}
           </button>
+
+          {hash && isPending && (
+            <div className="mt-3 text-xs text-gray-400 text-center">
+              <div>💡 <strong>Tip:</strong> If the process seems stuck, check the transaction on Etherscan.</div>
+              <div>If it's confirmed there, close this form and refresh the page.</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
