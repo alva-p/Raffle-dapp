@@ -22,24 +22,29 @@ export function useGetActiveLotteries() {
 
 // Hook para crear una lotería
 export function useCreateLottery() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract();
+  const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
   
   const { isLoading: isConfirming, isSuccess, isError: isConfirmError } = useWaitForTransactionReceipt({
     hash,
+    confirmations: 1,
   });
 
   const createLottery = (ticketPrice: string, lotteryName?: string, isPrivate?: boolean) => {
     const currency = LOTTERY_CURRENCY.NATIVE; // NATIVE (ETH)
     const token = "0x0000000000000000000000000000000000000000"; // Zero address for native ETH
     
-    console.log('Creating lottery with params:', {
+    console.log('🚀 Creating lottery with params:', {
       currency,
       token,
       ticketPrice,
       lotteryName,
       isPrivate,
-      ticketPriceWei: parseEther(ticketPrice).toString()
+      ticketPriceWei: parseEther(ticketPrice).toString(),
+      factoryAddress: CONTRACT_ADDRESSES.LOTTERY_FACTORY
     });
+    
+    // Reset previous state
+    reset();
     
     // Preparar el nombre de la lotería
     const finalLotteryName = lotteryName && lotteryName.trim().length > 0 
@@ -51,18 +56,27 @@ export function useCreateLottery() {
       abi: LOTTERY_FACTORY_ABI,
       functionName: 'createLotteryOpen', // Solo loterías públicas por ahora
       args: [currency, token, parseEther(ticketPrice), finalLotteryName],
-      // Optimizar gas para reducir costos
-      gas: 3000000n, // 3M gas limit (más bajo)
     });
   };
+
+  // Debug logging
+  console.log('🔍 CreateLottery state:', {
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error: error?.message,
+    isConfirmError
+  });
 
   return {
     createLottery,
     isPending: isPending || isConfirming,
     isSuccess,
     hash,
-    error,
-    isError: isConfirmError
+    error: error || (isConfirmError ? new Error('Transaction confirmation failed') : null),
+    isError: !!error || isConfirmError,
+    reset
   };
 }
 

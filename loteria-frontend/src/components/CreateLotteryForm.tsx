@@ -12,7 +12,7 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
   const [lotteryName, setLotteryName] = useState('');
   const [lotteryType, setLotteryType] = useState<'public' | 'private'>('public');
   
-  const { createLottery, isPending, isSuccess } = useCreateLottery();
+  const { createLottery, isPending, isSuccess, error, hash, reset } = useCreateLottery();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +41,9 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
 
   if (isSuccess) {
     setTimeout(() => {
+      reset();
       onClose();
-    }, 2000);
+    }, 3000);
     
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -50,7 +51,12 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
           <div className="text-green-400 text-4xl mb-4">🎉</div>
           <h2 className="text-2xl font-bold text-white mb-2">Lottery Created!</h2>
           <p className="text-gray-300 mb-4">Your lottery has been successfully created and is now live.</p>
-          <div className="text-sm text-gray-400">Closing in 2 seconds...</div>
+          {hash && (
+            <p className="text-xs text-gray-500 mb-4 font-mono">
+              Hash: {hash.slice(0, 10)}...{hash.slice(-8)}
+            </p>
+          )}
+          <div className="text-sm text-gray-400">Closing in 3 seconds...</div>
         </div>
       </div>
     );
@@ -179,6 +185,23 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
           {!isConnected && (
             <div className="mb-4 p-3 bg-red-900/30 border border-red-500/30 rounded-lg text-red-400 text-sm text-center">
               Please connect your wallet to create a lottery
+            </div>
+          )}
+          
+          {error && (
+            <div className="mb-4 p-3 bg-red-900/30 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              <div className="font-medium mb-1">Transaction Failed</div>
+              <div className="text-xs opacity-80">{error.message}</div>
+            </div>
+          )}
+          
+          {hash && isPending && (
+            <div className="mb-4 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg text-blue-400 text-sm">
+              <div className="font-medium mb-1">Transaction Submitted</div>
+              <div className="text-xs opacity-80 font-mono">
+                Hash: {hash.slice(0, 10)}...{hash.slice(-8)}
+              </div>
+              <div className="text-xs mt-1">Waiting for confirmation...</div>
             </div>
           )}
           
