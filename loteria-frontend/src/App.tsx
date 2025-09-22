@@ -12,7 +12,7 @@ import { type Address } from "viem";
 export default function App() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [currentView, setCurrentView] = useState<'home' | 'lotteries'>('home');
-  const [lotteryType, setLotteryType] = useState<'public' | 'private'>('public');
+  // const [lotteryType, setLotteryType] = useState<'public' | 'private'>('public');
   const [activeFilter, setActiveFilter] = useState<FilterState>('all');
   
   const { address: currentAccount } = useAccount();
@@ -25,7 +25,7 @@ export default function App() {
     goToPage, 
     nextPage, 
     prevPage 
-  } = useFilteredLotteries(activeLotteries, activeFilter);
+  } = useFilteredLotteries([...activeLotteries], activeFilter);
 
   // Refetch data when account changes
   useEffect(() => {

@@ -112,11 +112,11 @@ export default function LotteryCard({ address, onStateUpdate }: LotteryCardProps
     return state;
   };
 
-  const formatEndTime = (timestamp: number) => {
-    if (timestamp === 0) return 'No end time';
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleString();
-  };
+  // const formatEndTime = (timestamp: number) => {
+  //   if (timestamp === 0) return 'No end time';
+  //   const date = new Date(timestamp * 1000);
+  //   return date.toLocaleString();
+  // };
 
   const canClose = isOpen && isConnected && (creator?.toLowerCase() === userAddress?.toLowerCase());
 

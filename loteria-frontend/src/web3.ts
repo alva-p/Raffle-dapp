@@ -1,7 +1,7 @@
 // src/web3.ts
 import { createConfig, http } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
-import { injected, metaMask } from 'wagmi/connectors';
+import { metaMask } from 'wagmi/connectors';
 
 /**
  * Config Wagmi para Sepolia.

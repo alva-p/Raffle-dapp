@@ -1,6 +1,6 @@
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther, type Address } from 'viem';
-import { CONTRACT_ADDRESSES, LOTTERY_FACTORY_ABI, LOTTERY_BASE_ABI, LOTTERY_STATE, LOTTERY_CURRENCY } from '../contracts';
+import { CONTRACT_ADDRESSES, LOTTERY_FACTORY_ABI, LOTTERY_BASE_ABI, LOTTERY_CURRENCY } from '../contracts';
 
 // Hook para obtener todas las loterías
 export function useGetAllLotteries() {
@@ -49,7 +49,7 @@ export function useCreateLottery() {
     writeContract({
       address: CONTRACT_ADDRESSES.LOTTERY_FACTORY,
       abi: LOTTERY_FACTORY_ABI,
-      functionName: isPrivate ? 'createLotteryPrivate' : 'createLotteryOpen',
+      functionName: 'createLotteryOpen', // Solo loterías públicas por ahora
       args: [currency, token, parseEther(ticketPrice), finalLotteryName],
       // Optimizar gas para reducir costos
       gas: 3000000n, // 3M gas limit (más bajo)
@@ -99,7 +99,7 @@ export function useLotteryInfo(address: Address) {
 // Hook para obtener detalles de una lotería específica
 export function useLotteryDetails(address: Address) {
   // Intentar usar getLotteryInfo primero (V6)
-  const { data: lotteryInfo, error: infoError } = useReadContract({
+  const { data: lotteryInfo } = useReadContract({
     address,
     abi: LOTTERY_BASE_ABI,
     functionName: 'getLotteryInfo',
@@ -155,7 +155,7 @@ export function useLotteryDetails(address: Address) {
 
   // Usar datos de getLotteryInfo si está disponible (V6), sino usar llamadas individuales
   if (lotteryInfo && Array.isArray(lotteryInfo) && lotteryInfo.length >= 9) {
-    const [name, creatorAddr, stateNum, currency, token, ticketPriceWei, participantCount, prizePool, winnerAddr] = lotteryInfo;
+    const [name, creatorAddr, stateNum, currency, , ticketPriceWei, participantCount, prizePool, winnerAddr] = lotteryInfo;
     
     return {
       lotteryName: name as string,
