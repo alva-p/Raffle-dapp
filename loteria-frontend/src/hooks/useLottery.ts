@@ -66,6 +66,36 @@ export function useCreateLottery() {
   };
 }
 
+// Hook simplificado para obtener solo el estado de una lotería (para filtros)
+export function useLotteryInfo(address: Address) {
+  const { data: lotteryInfo } = useReadContract({
+    address,
+    abi: LOTTERY_BASE_ABI,
+    functionName: 'getLotteryInfo',
+    query: { enabled: !!address }
+  });
+
+  if (lotteryInfo && Array.isArray(lotteryInfo) && lotteryInfo.length >= 9) {
+    const [name, creator, stateNum, currency, token, ticketPrice, participantCount, prizePool, winner] = lotteryInfo;
+    
+    return {
+      data: {
+        name: name as string,
+        creator: creator as Address,
+        state: Number(stateNum), // 0=Open, 1=Drawing, 2=Completed, 3=Cancelled
+        currency: Number(currency),
+        token: token as Address,
+        ticketPrice: ticketPrice as bigint,
+        participantCount: Number(participantCount),
+        prizePool: prizePool as bigint,
+        winner: winner as Address
+      }
+    };
+  }
+
+  return { data: null };
+}
+
 // Hook para obtener detalles de una lotería específica
 export function useLotteryDetails(address: Address) {
   // Intentar usar getLotteryInfo primero (V6)

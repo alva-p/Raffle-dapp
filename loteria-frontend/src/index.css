@@ -70,10 +70,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: block;
 }
 
 h1 {
@@ -101,8 +100,9 @@ button:focus-visible {
 }
 
 /* Asegurar que html y body ocupen toda la altura */
-html, body, #root {
-  height: 100%;
+html, body, #root, #__next {
+  height: auto;
+  min-height: 100dvh;
   margin: 0;
   padding: 0;
 }

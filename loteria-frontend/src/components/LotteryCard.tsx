@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 
 interface LotteryCardProps {
   address: Address;
+  onStateUpdate?: (address: Address, state: number) => void;
 }
 
-export default function LotteryCard({ address }: LotteryCardProps) {
+export default function LotteryCard({ address, onStateUpdate }: LotteryCardProps) {
   const { address: userAddress, isConnected } = useAccount();
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -28,9 +29,16 @@ export default function LotteryCard({ address }: LotteryCardProps) {
   const { cancelLottery, isPending: isCancelling } = useCancelLottery();
 
   const isOpen = stateNumber === 0; // Open state (0 = Open) - allows entries
+
+  // Report state to parent component for filtering
+  useEffect(() => {
+    if (onStateUpdate && typeof stateNumber === 'number') {
+      onStateUpdate(address, stateNumber);
+    }
+  }, [address, stateNumber, onStateUpdate]);
   const isDrawing = stateNumber === 1; // Drawing state (1 = Drawing)  
   const isClosed = stateNumber === 2; // Completed state (2 = Completed)
-  // LotteryOpen no tiene límite de participantes (maxParticipants = 0 significa ilimitado)
+  // LotteryOpen has no participant limit (maxParticipants = 0 means unlimited)
   const isFull = maxParticipants > 0 && participantsCount >= maxParticipants;
   const isExpired = endTime > 0 && Date.now() / 1000 > endTime;
   
@@ -111,7 +119,6 @@ export default function LotteryCard({ address }: LotteryCardProps) {
   };
 
   const canClose = isOpen && isConnected && (creator?.toLowerCase() === userAddress?.toLowerCase());
-  const isCreator = creator?.toLowerCase() === userAddress?.toLowerCase();
 
   return (
     <div className="bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-indigo-500/20 transition-all border border-gray-700">
@@ -191,24 +198,7 @@ export default function LotteryCard({ address }: LotteryCardProps) {
         </div>
       )}
 
-      {/* Debug Info */}
-      {isExpanded && (
-        <div className="mb-4 p-3 bg-gray-900/50 rounded-lg text-xs">
-          <div className="text-gray-400 space-y-1">
-            <div><strong>Lottery:</strong> {address?.slice(0, 8)}...{address?.slice(-4)}</div>
-            <div><strong>State:</strong> {state} (#{stateNumber})</div>
-            <div><strong>Ticket Price:</strong> {ticketPrice} ETH</div>
-            <div><strong>Participants:</strong> {participantsCount}</div>
-            <div><strong>Connected User:</strong> {userAddress?.slice(0, 8)}...{userAddress?.slice(-4)}</div>
-            <div><strong>Is Connected:</strong> {isConnected ? '✅' : '❌'}</div>
-            <div><strong>Is Open:</strong> {isOpen ? '✅' : '❌'}</div>
-            <div><strong>Is Full:</strong> {isFull ? '❌' : '✅'}</div>
-            <div><strong>Is Expired:</strong> {isExpired ? '❌' : '✅'}</div>
-            <div><strong>Can Buy Ticket:</strong> {canBuyTicket ? '✅' : '❌'}</div>
-            {buyError && <div className="text-red-400"><strong>Last Error:</strong> {buyError.message}</div>}
-          </div>
-        </div>
-      )}
+
 
       {/* Actions */}
       <div className="space-y-2">
@@ -248,26 +238,7 @@ export default function LotteryCard({ address }: LotteryCardProps) {
           </div>
         )}
 
-        {/* Debug Info for Creator Controls */}
-        {isConnected && (
-          <div className="p-2 bg-blue-900/20 border border-blue-500/20 rounded text-blue-300 text-xs space-y-1">
-            <div className="font-semibold text-blue-200">🔍 Debug Info:</div>
-            <div>Connected: {isConnected ? '✅' : '❌'}</div>
-            <div>Your Address: {userAddress?.slice(0, 6)}...{userAddress?.slice(-4) || 'None'}</div>
-            <div>Creator: {creator?.slice(0, 6)}...{creator?.slice(-4) || 'Loading...'}</div>
-            <div>Are you creator?: {isCreator ? '✅ YES' : '❌ NO'}</div>
-            <div>Lottery State: {state} ({stateNumber})</div>
-            <div>Is Open?: {isOpen ? '✅' : '❌'}</div>
-            <div>Participants: {participantsCount}</div>
-            <div>Can show creator controls?: {canClose ? '✅ YES' : '❌ NO'}</div>
-            {!canClose && isCreator && (
-              <div className="text-yellow-300">⚠️ You're the creator but lottery is not open anymore</div>
-            )}
-            {!canClose && !isCreator && creator && (
-              <div className="text-red-300">❌ You're not the creator of this lottery</div>
-            )}
-          </div>
-        )}
+
 
         {canBuyTicket && (
           <button

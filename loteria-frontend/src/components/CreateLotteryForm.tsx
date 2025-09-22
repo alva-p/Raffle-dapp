@@ -11,62 +11,16 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
   const [ticketPrice, setTicketPrice] = useState('0.001');
   const [lotteryName, setLotteryName] = useState('');
   const [lotteryType, setLotteryType] = useState<'public' | 'private'>('public');
-  const [participantsFile, setParticipantsFile] = useState<File | null>(null);
-  const [participantsList, setParticipantsList] = useState<string[]>([]);
   
   const { createLottery, isPending, isSuccess } = useCreateLottery();
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setParticipantsFile(file);
-    
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      console.log('📄 Archivo leído:', text);
-      
-      // Soporte para ambos formatos: líneas separadas O comas
-      let addresses: string[] = [];
-      
-      // Si contiene comas, procesar como CSV
-      if (text.includes(',')) {
-        addresses = text
-          .split(/[,\n]/) // Separar por comas O saltos de línea
-          .map(item => item.trim())
-          .filter(item => {
-            const isValid = item.length > 0 && item.startsWith('0x') && item.length >= 40;
-            console.log(`🔍 Dirección: "${item}" (length: ${item.length}) -> ${isValid ? 'VÁLIDA' : 'INVÁLIDA'}`);
-            return isValid;
-          });
-      } else {
-        // Formato tradicional: una dirección por línea
-        addresses = text
-          .split('\n')
-          .map(line => line.trim())
-          .filter(line => {
-            const isValid = line.length > 0 && line.startsWith('0x') && line.length >= 40;
-            console.log(`🔍 Línea: "${line}" (length: ${line.length}) -> ${isValid ? 'VÁLIDA' : 'INVÁLIDA'}`);
-            return isValid;
-          });
-      }
-      
-      console.log('✅ Direcciones procesadas:', addresses);
-      setParticipantsList(addresses);
-    };
-    reader.readAsText(file);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('🚀 Enviando formulario:', {
+    console.log('🚀 Sending form:', {
       isConnected,
       ticketPrice,
-      lotteryType,
-      participantsList: participantsList.length,
-      participantsFile: participantsFile?.name
+      lotteryType
     });
     
     if (!isConnected) {
@@ -79,14 +33,9 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
       return;
     }
 
-    if (lotteryType === 'private' && participantsList.length === 0) {
-      console.log('❌ Error: No hay participantes para lotería privada');
-      alert(`Please upload a file with participant addresses for private lottery. Current participants: ${participantsList.length}`);
-      return;
-    }
-
-    const isPrivate = lotteryType === 'private';
-    console.log('✅ Creando lotería:', { isPrivate, participants: participantsList.length });
+    // Only public lotteries are supported for now
+    const isPrivate = false;
+    console.log('✅ Creating lottery:', { isPrivate });
     createLottery(ticketPrice, lotteryName, isPrivate);
   };
 
@@ -144,66 +93,19 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryFormProps) {
                 <div className="text-xs opacity-80">Anyone can join</div>
               </button>
               
-              <button
-                type="button"
-                onClick={() => setLotteryType('private')}
-                className={`p-3 rounded-lg border-2 transition text-left ${
-                  lotteryType === 'private'
-                    ? 'border-purple-500 bg-purple-500/20 text-white'
-                    : 'border-gray-600 bg-gray-700 text-gray-300 hover:border-gray-500'
-                }`}
+              <div
+                className="p-3 rounded-lg border-2 border-gray-600 bg-gray-800 text-gray-500 cursor-not-allowed opacity-60 text-left relative"
               >
                 <div className="text-base mb-1">🔐 Private</div>
-                <div className="text-xs opacity-80">Import participants</div>
-              </button>
+                <div className="text-xs opacity-80">Coming Soon</div>
+                <div className="absolute top-2 right-2 text-xs bg-yellow-600 text-yellow-100 px-2 py-1 rounded text-[10px] font-medium">
+                  SOON
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* File Upload for Private Lotteries */}
-          {lotteryType === 'private' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Upload Participants (.txt file)
-              </label>
-              <input
-                type="file"
-                accept=".txt"
-                onChange={handleFileUpload}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg 
-                         text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg 
-                         file:border-0 file:text-sm file:font-semibold 
-                         file:bg-indigo-600 file:text-white hover:file:bg-indigo-500"
-              />
-              <div className="text-xs text-gray-400 mt-1">
-                Upload a .txt file with Ethereum addresses:
-                <br />• One per line: 0x123...<br />• Or comma-separated: 0x123..., 0x456...
-              </div>
-              
-              {participantsList.length > 0 && (
-                <div className="mt-2 p-2 bg-green-900/30 border border-green-500/30 rounded text-xs">
-                  <div className="text-green-400 font-medium">
-                    ✅ {participantsList.length} participants loaded
-                  </div>
-                  <div className="text-gray-400 mt-1">
-                    {participantsList.slice(0, 2).join(', ')}
-                    {participantsList.length > 2 && ` +${participantsList.length - 2} more...`}
-                  </div>
-                </div>
-              )}
-              
-              {/* Debug info temporal */}
-              <div className="mt-2 p-2 bg-blue-900/30 border border-blue-500/30 rounded text-xs">
-                <div className="text-blue-400 font-medium">
-                  🔍 Debug Info:
-                </div>
-                <div className="text-gray-400 mt-1">
-                  • File: {participantsFile?.name || 'None'}
-                  • Participants: {participantsList.length}
-                  • Lottery Type: {lotteryType}
-                </div>
-              </div>
-            </div>
-          )}
+
 
           {/* Ticket Price */}
           <div>
