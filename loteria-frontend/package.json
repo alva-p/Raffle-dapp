@@ -10,12 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.89.0",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.90.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.6.0",
-    "viem": "^2.37.6",
-    "wagmi": "^2.17.0"
+    "viem": "^2.37.8",
+    "wagmi": "^2.17.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

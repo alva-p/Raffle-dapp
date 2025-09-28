@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ConnectButton from "./components/ConnectButton";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import LotteryCard from "./components/LotteryCard";
 import CreateLotteryForm from "./components/CreateLotteryForm";
 import UserInfo from "./components/UserInfo";
@@ -62,10 +62,11 @@ export default function App() {
       {/* Header */}
       <header className="flex items-center justify-between px-8 py-4 border-b border-gray-800 sticky top-0 bg-gray-950/80 backdrop-blur-md z-50">
         <h1 
-          className="text-2xl font-bold text-indigo-400 flex items-center gap-2 cursor-pointer hover:text-indigo-300 transition"
+          className="text-2xl font-bold text-indigo-400 flex items-center gap-3 cursor-pointer hover:text-indigo-300 transition"
           onClick={handleBackHome}
         >
-          🎲 Lottery
+          <img src="/1.png" alt="Lottery Logo" className="w-8 h-8 rounded-full shadow" />
+          Lottery
         </h1>
         <div className="flex items-center gap-4">
           {currentView === 'lotteries' && (
@@ -79,6 +80,8 @@ export default function App() {
           <ConnectButton />
         </div>
       </header>
+
+      {/* ...existing code... */}
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-0">
@@ -129,6 +132,31 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            {/* Sepolia Notice & Instructions in English */}
+            <div className="max-w-2xl mx-auto p-4">
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 p-4 mb-6 rounded">
+                <h2 className="font-bold text-lg mb-2">⚠️ Use Sepolia Testnet</h2>
+                <p>To participate in the lottery, you must connect your wallet to the <span className="font-bold">Sepolia Testnet</span> and have some test ETH.</p>
+                <p className="mt-2">Get free ETH from these faucets:</p>
+                <ul className="list-disc ml-6 mt-2">
+                  <li><a href="https://cloud.google.com/application/web3/faucet/ethereum/sepolia" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">Google Cloud Sepolia Faucet</a></li>
+                  <li><a href="https://www.alchemy.com/faucets/ethereum-sepolia" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">Alchemy Sepolia Faucet</a></li>
+                  <li><a href="https://sepolia-faucet.pk910.de/" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">PK910 Sepolia Faucet</a></li>
+                  <li><a href="https://faucets.chain.link/sepolia" target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">Chainlink Sepolia Faucet</a></li>
+                </ul>
+              </div>
+              <div className="bg-gray-100 border-l-4 border-gray-500 text-gray-900 p-4 mb-6 rounded">
+                <h3 className="font-semibold mb-2">📝 Basic Instructions</h3>
+                <ol className="list-decimal ml-6">
+                  <li>Connect your wallet using the button above.</li>
+                  <li>Make sure you are on Sepolia Testnet.</li>
+                  <li>If you don't have ETH, use one of the faucets to get it for free.</li>
+                  <li>Join available lotteries or create a new one.</li>
+                  <li>Good luck! If you win, you will see the results in the app.</li>
+                </ol>
+              </div>
+            </div>
           </section>
         ) : (
           /* Lotteries View with Sidebar */
@@ -163,12 +191,6 @@ export default function App() {
                     </p>
                   </div>
                   <div className="flex gap-4">
-                    <button
-                      onClick={handleBackHome}
-                      className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition"
-                    >
-                      ← Home
-                    </button>
                     <button
                       onClick={handleCreateLottery}
                       className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition"
