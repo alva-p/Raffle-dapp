@@ -1,219 +1,302 @@
-# 🎲 Decentralized Lottery DApp
+# Raffle / Lottery DApp (Ethereum + Chainlink VRF)
 
-A fully decentralized lottery system built on Ethereum with Chainlink VRF for provably fair randomness. Create transparent lotteries where winners are selected automatically by verifiable random functions.
+#### A decentralized raffle system with verifiable randomness via Chainlink VRF. Fully transparent lifecycle and automatic on-chain payouts.
 
-![Lottery DApp](https://img.shields.io/badge/Ethereum-Sepolia-blue) ![Solidity](https://img.shields.io/badge/Solidity-^0.8.24-blue) ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Chainlink](https://img.shields.io/badge/Chainlink-VRF%20V2-orange)
+## Live Frontend: https://raffle-dapp-five.vercel.app/
 
-## 🚀 **Live Demo**
-🌐 **Frontend:** [Live on v0](https://raffle-dapp-five.vercel.app/)  
-⚡ **Smart Contracts:** Deployed on Sepolia Testnet  
-📄 **Factory Contract:** [`0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE`](https://sepolia.etherscan.io/address/0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE)
+### Factory (Sepolia): 0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE
 
----
+# Tech Stack: 
+- Solidity ^0.8.24  
+- React 18 
+- TypeScript 5 
+- Wagmi/Viem 
+- Tailwind 
+- Foundry
+- Network: Ethereum Sepolia · 
+- Chainlink VRF v2 (Subscription 12478)
 
-## ✨ **Features**
+## TL;DR (Too Long; Didn't Read)
 
-### 🎯 **Core Functionality**
-- **Create Public Lotteries** - Set ticket price and let anyone join
-- **Transparent Randomness** - Chainlink VRF ensures fair winner selection
-- **Automatic Payouts** - Winners receive funds automatically via VRF callback
-- **Real-time Updates** - Live lottery state tracking and filtering
-- **Multi-wallet Support** - MetaMask, WalletConnect, and more
+- **Anyone can create a public raffle by setting a ticket price.**
+- **Users buy tickets while the raffle is open.**
+- **The creator closes the raffle to trigger a provably fair winner selection via VRF.**
+- **The winner is paid automatically on-chain.**
 
-### 🔧 **Technical Features**
-- **Factory Pattern** - Efficient lottery deployment through factory contract
-- **VRF Relay Pattern** - Optimized gas usage with 100K callback limit
-- **State Management** - Comprehensive lottery lifecycle (Open → Drawing → Completed)
-- **Emergency Functions** - Creator controls for lottery management
-- **Responsive Design** - Works seamlessly on desktop and mobile
+# Table of Contents
 
----
+## Architecture
 
-## 🏗️ **Architecture**
+## Addresses & Deployment
 
-### **Smart Contracts**
+## User Stories
+
+## Core Flows
+
+## Key Features
+
+## Install & Run
+
+## Contract Configuration
+
+## Security
+
+## Tests & Coverage
+
+## Limitations & Roadmap
+
+## License & Author
+
+## References
+
+## Architecture
+
+### Smart Contracts (Foundry):
 ```
-├── LotteryFactoryV7.sol     # Main factory with VRF integration
-├── LotteryOpenV4.sol        # Individual lottery instances  
-├── VRFManager.sol           # Chainlink VRF subscription management
-└── EmergencyWithdraw.sol    # Emergency recovery functions
+├── LotteryFactoryV7.sol   # Deploys raffles and orchestrates VRF
+├── LotteryOpenV4.sol      # Individual raffle instances
+├── VRFManager.sol         # Chainlink VRF subscription/requests
+└── EmergencyWithdraw.sol  # Controlled recovery escape hatches
 ```
 
-### **Frontend Stack**
-```
-├── React 18 + TypeScript    # Modern UI framework
-├── Wagmi + Viem             # Ethereum interaction library
-├── Tailwind CSS             # Utility-first styling
-└── Custom Hooks             # State management and blockchain interaction
-```
+# Frontend (React + TypeScript):
 
-### **Blockchain Integration**
-- **Network:** Ethereum Sepolia Testnet
-- **Oracle:** Chainlink VRF V2 (Subscription ID: 12478)
-- **Gas Optimization:** 100K gas limit for reliable callbacks
-- **Proxy Pattern:** Efficient contract deployment
+- ### Wagmi/Viem for on-chain calls
 
----
+- ### Custom hooks for raffle state and events
 
-##  **How It Works**
+- ### Tailwind UI with state filters and pagination
 
-1. **Create Lottery** 🎫
-   - Set ticket price (minimum 0.001 ETH)
-   - Optional lottery name for identification
-   - Factory deploys new lottery instance
 
-2. **Players Join** 👥
-   - Purchase tickets at set price
-   - Unlimited participants (no cap)
-   - Real-time participant tracking
+# Blockchain Integration:
 
-3. **Random Selection** 🎲
-   - Creator closes lottery to trigger drawing
-   - Chainlink VRF provides verifiable randomness
-   - Winner selected automatically on-chain
+- ### Chainlink VRF v2 with ~100k gas callback budget
 
-4. **Automatic Payout** 💰
-   - Winner receives full prize pool instantly
-   - Transaction confirmed on blockchain
-   - Transparent and immutable results
+- ### Factory pattern for consistent, cheaper deployments
 
----
 
-## 🛠️ **Installation & Setup**
+## Lifecycle: Open → Drawing → Completed | Cancelled
 
-### **Prerequisites**
+## Addresses & Deployment
+
+### Network: Sepolia
+
+### Factory: 0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE
+
+### VRF Subscription: 12478
+
+### VRF Coordinator / Key Hash: configured in VRFManager.sol per network
+
+## If you fork or redeploy, update these addresses in the frontend env and Foundry scripts.
+
+# User Stories
+### 1) As a Creator, I want to create a public raffle
+
+Acceptance Criteria (Given/When/Then):
+
+Given my wallet is connected, When I set a valid ticket price and confirm, Then the Factory deploys a new raffle in Open state.
+
+Given a raffle is Open, When I close it, Then it moves to Drawing and requests randomness from VRF.
+
+### 2) As a Player, I want to join by buying tickets
+
+Given a raffle is Open, When I call buyTicket() with msg.value == ticketPrice, Then I’m registered as a participant and the transaction is visible on the explorer.
+
+Given I send an incorrect amount, When I try to buy, Then the transaction reverts with a clear error.
+
+### 3) As the System, I want a verifiable winner selection
+
+Given a raffle in Drawing, When the VRF callback arrives, Then the contract deterministically picks one winner on-chain and sets the raffle to Completed.
+
+### 4) As the Winner, I want to receive the pot automatically
+
+Given I’m selected, When the callback executes, Then the pot is transferred to me in the same transaction (no manual steps).
+
+### 5) As a Creator, I need emergency procedures
+
+Given an external issue (e.g., unfunded VRF subscription), When I use an allowed emergency function, Then I can recover stuck funds under strict access control.
+
+### 6) As an Auditor/Reviewer, I need full traceability
+
+Given any raffle, When I inspect events and state, Then I can verify participants, state transitions, VRF requestId, and the final winner.
+
+## Core Flows
+
+- Create Raffle → Connect wallet → Set ticket price → Factory.createLottery() → new LotteryOpenV4 instance.
+
+- Participate
+Player calls buyTicket() with exact ticketPrice.
+
+- Close & Draw
+Creator calls close() → VRFManager.requestRandomWords() → state Drawing.
+
+- VRF Callback
+Coordinator calls fulfillRandomWords() → compute winning index → auto-payout → state Completed.
+
+- Key Features
+
+- Provably Fair Randomness: Chainlink VRF v2 with cryptographic proofs.
+
+- Automatic Payouts: Winner receives the pot in the VRF callback.
+
+- Factory Pattern: Lower deployment cost for new raffles.
+
+- Productive UI: Filters by state (All/Open/Drawing/Completed/Cancelled), pagination, recent-first ordering.
+
+- Wallet Compatibility: MetaMask and WalletConnect via Wagmi.
+
+## Install & Run
+### Prerequisites
 - Node.js 18+
-- Foundry (for smart contracts)
-- MetaMask or compatible wallet
 
-### **Frontend Setup**
-```bash
+- Foundry (forge + cast)
+
+- Wallet (MetaMask or compatible)
+
+### Frontend
+```
 cd loteria-frontend
 npm install
 npm run dev
 ```
 
-### **Smart Contract Development**
-```bash
+### Contracts
+```
 cd contracts
+forge install
 forge build
 forge test
-forge script script/DeployV5.s.sol --broadcast --rpc-url sepolia
 ```
 
----
+# Example deploy
+```
+forge script script/DeployV5.s.sol --rpc-url $SEPOLIA_RPC --broadcast --verify
+```
 
-## 📱 **User Interface**
+## Contract Configuration
 
-### **Home Page**
-- Clean landing with Web3 branding
-- Connect wallet functionality
-- Quick access to create/explore lotteries
+### Create an .env for Foundry and the frontend:
 
-### **Lottery Browser**
-- **Sidebar Filtering:** All, Open, Drawing, Completed, Cancelled
-- **Pagination:** 10 lotteries per page with navigation
-- **Real-time Counts:** Live statistics for each category
-- **Smart Ordering:** Most recent lotteries displayed first
+# Foundry / scripts
+```
+PRIVATE_KEY=0x...                 # test-only deploy key
+SEPOLIA_RPC=https://...
+ETHERSCAN_API_KEY=...
+```
 
-### **Lottery Cards**
-- **Visual State Indicators:** Clear status badges and colors
-- **Key Information:** Price, participants, creator address
-- **Action Buttons:** Join lottery or manage (if creator)
-- **Progress Tracking:** Visual participant progress
+# Frontend
+```
+VITE_FACTORY_ADDRESS=0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE
+VITE_NETWORK_ID=11155111
+VITE_VRF_SUBSCRIPTION_ID=12478
+```
 
----
+### Best practice: commit a .env.example and add .env to .gitignore.
 
-## 🔐 **Security Features**
+# Security
 
-### **Smart Contract Security**
-- **Access Control** - Only creators can manage their lotteries
-- **State Validation** - Comprehensive state checks prevent invalid transitions  
-- **Emergency Functions** - Creator escape hatches for edge cases
-- **Reentrancy Protection** - Standard OpenZeppelin security patterns
+- ### Access Control: only the raffle creator can close/cancel that raffle.
 
-### **VRF Security**
-- **Subscription Model** - Pre-funded LINK for reliable randomness
-- **Request Validation** - Only authorized contracts can request randomness
-- **Callback Verification** - Ensures randomness comes from Chainlink
+- ### Strict State Guards: transitions enforced (Open → Drawing → Completed/Cancelled).
 
----
+- ### Reentrancy Protection: applied to payment-sensitive paths.
 
-### **Test Coverage**
-- ✅ Factory deployment and lottery creation
-- ✅ Ticket purchasing and validation  
-- ✅ VRF integration and winner selection
-- ✅ Emergency functions and edge cases
-- ✅ Gas optimization verification
+- ### VRF Isolation: VRFManager separates subscription + callbacks.
 
----
+- ### Emergency Functions: constrained and event-logged for auditability.
 
-## 🎯 **Technical Highlights**
+- ### Threat Model (high-level):
 
-### **Gas Optimization**
-- **VRF Callback Limit:** Optimized to 100K gas for reliable execution
-- **Factory Pattern:** Reduces deployment costs for new lotteries
-- **Efficient State Management:** Minimal storage reads/writes
+- ### Malicious inputs → explicit validation with informative require messages.
 
-### **Developer Experience**
-- **TypeScript Integration:** Full type safety across frontend
-- **Custom Hooks:** Reusable blockchain interaction logic
-- **Error Handling:** Comprehensive error states and user feedback
-- **Real-time Updates:** Automatic UI updates on blockchain state changes
+- ### VRF liveness → monitor LINK funding and operational alerts.
 
-### **Scalability Considerations**
-- **Pagination System:** Handles large numbers of lotteries efficiently
-- **Filter Architecture:** Independent state management per filter
-- **Modular Design:** Easy to extend with new lottery types
+- ### Fund lockups → defined recovery paths gated by roles (optional timelocks).
 
----
+# Tests & Coverage
 
-## 📈 **Future Enhancements**
+- ### Unit Tests (Foundry):
 
-### **Planned Features**
-- 🔒 **Private Lotteries** - Whitelist-based participant management
-- 🏆 **Multiple Winners** - Support for multiple prize tiers
-- ⏰ **Time-based Lotteries** - Automatic closure after duration
-- 🌐 **Multi-chain Support** - Deploy to additional networks
+- ### Factory deploy + raffle creation
 
-### **UI/UX Improvements**
-- 📊 **Analytics Dashboard** - Historical lottery statistics
-- 🔔 **Notifications** - Real-time updates for participants
-- 🎨 **Themes** - Customizable visual appearance
-- 📱 **Mobile App** - Native mobile application
+- ### Ticket purchase + validation
 
----
+- ### VRF integration (mock) + winner selection
 
-## 🤝 **Contributing**
+- ### Emergency paths + invalid states
 
-This project welcomes contributions! Please feel free to:
-- Report bugs or suggest features
-- Submit pull requests for improvements
-- Share feedback on user experience
+- ### Gas checks for callback budget
 
----
+```
+ Run:
 
-## 📄 **License**
+forge test -vvv
+```
+- ### Limitations & Roadmap
 
-MIT License - feel free to use this project as reference or starting point for your own DeFi applications.
+- ### Current Limitations
 
----
+- ### Single winner per raffle
 
-## 👨‍💻 **Built By**
+- ### Manual closing by the creator
+
+- ### Requires funded VRF subscription (LINK)
+
+## Roadmap
+
+### Private raffles with whitelists
+
+### Multiple winners / prize tiers
+
+### Time-boxed raffles (auto-close by deadline)
+
+### Multi-chain support (Base, Abstract, Ronin EVM)
+
+### Analytics dashboard (history, participation KPIs)
+
+# License & Author
+
+#License: MIT
+#Author: @pimmpi_ — GitHub
+ #· Twitter
+
+# References
+
+## Chainlink VRF v2: https://docs.chain.link/vrf/v2/introduction
+
+## Foundry Book: https://book.getfoundry.sh/
+
+## Wagmi: https://wagmi.sh/
+
+## Tailwind CSS: https://tailwindcss.com/
+
+## Extras (optional but recruiter-friendly)
+
+## .env.example
+
+# Foundry / scripts
+```
+PRIVATE_KEY=
+SEPOLIA_RPC=
+ETHERSCAN_API_KEY=
+```
+
+# Frontend
+```
+VITE_FACTORY_ADDRESS=
+VITE_NETWORK_ID=11155111
+VITE_VRF_SUBSCRIPTION_ID=
+```
+
+# Contributing
+
+1. Fork the repo and create a feature branch.
+2. Keep PRs small and focused (tests required for contracts).
+3. Explain the rationale, gas impact, and UX impact.
+4. Avoid committing secrets; use `.env` and `.env.example`.
+
+## **Built By**
 
 **@pimmpi_** | [GitHub](https://github.com/alva-p) | [Twitter](https://twitter.com/pimmpi_)
 
-*Built with ❤️ for the web3 community*
-
----
-
-## 🔗 **Links**
-
-- 📚 [Chainlink VRF Documentation](https://docs.chain.link/vrf/v2/introduction)
-- 🔧 [Foundry Documentation](https://book.getfoundry.sh/)
-- ⚛️ [Wagmi Documentation](https://wagmi.sh/)
-- 🎨 [Tailwind CSS](https://tailwindcss.com/)
-
----
-
-*This project demonstrates advanced blockchain development skills including smart contract architecture, oracle integration, frontend development, and Web3 user experience design.*
+*Built for the web3 community*
