@@ -25,31 +25,31 @@
 
 # Table of Contents
 
-## Architecture
+### Architecture
 
-## Addresses & Deployment
+### Addresses & Deployment
 
-## User Stories
+### User Stories
 
-## Core Flows
+### Core Flows
 
-## Key Features
+### Key Features
 
-## Install & Run
+### Install & Run
 
-## Contract Configuration
+### Contract Configuration
 
-## Security
+### Security
 
-## Tests & Coverage
+### Tests & Coverage
 
-## Limitations & Roadmap
+### Limitations & Roadmap
 
-## License & Author
+### License & Author
 
-## References
+### References
 
-## Architecture
+# Architecture
 
 ### Smart Contracts (Foundry):
 ```
@@ -59,35 +59,35 @@
 └── EmergencyWithdraw.sol  # Controlled recovery escape hatches
 ```
 
-# Frontend (React + TypeScript):
+## Frontend (React + TypeScript):
 
-- ### Wagmi/Viem for on-chain calls
+-  Wagmi/Viem for on-chain calls
 
-- ### Custom hooks for raffle state and events
+-  Custom hooks for raffle state and events
 
-- ### Tailwind UI with state filters and pagination
-
-
-# Blockchain Integration:
-
-- ### Chainlink VRF v2 with ~100k gas callback budget
-
-- ### Factory pattern for consistent, cheaper deployments
+-  Tailwind UI with state filters and pagination
 
 
-## Lifecycle: Open → Drawing → Completed | Cancelled
+## Blockchain Integration:
 
-## Addresses & Deployment
+-  Chainlink VRF v2 with ~100k gas callback budget
 
-### Network: Sepolia
+-  Factory pattern for consistent, cheaper deployments
 
-### Factory: 0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE
 
-### VRF Subscription: 12478
+# Lifecycle: Open → Drawing → Completed | Cancelled
 
-### VRF Coordinator / Key Hash: configured in VRFManager.sol per network
+- Addresses & Deployment
 
-## If you fork or redeploy, update these addresses in the frontend env and Foundry scripts.
+- Network: Sepolia
+
+- Factory: 0x9dc217a2b06d55e1E3C913D0597bE3847Ab373CE
+
+- VRF Subscription: 12478
+
+- VRF Coordinator / Key Hash: configured in VRFManager.sol per network
+
+### Note: if you fork or redeploy, update these addresses in the frontend env and Foundry scripts.
 
 # User Stories
 ### 1) As a Creator, I want to create a public raffle
@@ -120,7 +120,7 @@ Given an external issue (e.g., unfunded VRF subscription), When I use an allowed
 
 Given any raffle, When I inspect events and state, Then I can verify participants, state transitions, VRF requestId, and the final winner.
 
-## Core Flows
+# Core Flows
 
 - Create Raffle → Connect wallet → Set ticket price → Factory.createLottery() → new LotteryOpenV4 instance.
 
@@ -145,7 +145,7 @@ Coordinator calls fulfillRandomWords() → compute winning index → auto-payout
 
 - Wallet Compatibility: MetaMask and WalletConnect via Wagmi.
 
-## Install & Run
+# Install & Run
 ### Prerequisites
 - Node.js 18+
 
@@ -175,7 +175,7 @@ forge script script/DeployV5.s.sol --rpc-url $SEPOLIA_RPC --broadcast --verify
 
 ## Contract Configuration
 
-### Create an .env for Foundry and the frontend:
+ Create an .env for Foundry and the frontend:
 
 # Foundry / scripts
 ```
@@ -195,84 +195,81 @@ VITE_VRF_SUBSCRIPTION_ID=12478
 
 # Security
 
-- ### Access Control: only the raffle creator can close/cancel that raffle.
+-  Access Control: only the raffle creator can close/cancel that raffle.
 
-- ### Strict State Guards: transitions enforced (Open → Drawing → Completed/Cancelled).
+-  Strict State Guards: transitions enforced (Open → Drawing → Completed/Cancelled).
 
-- ### Reentrancy Protection: applied to payment-sensitive paths.
+-  Reentrancy Protection: applied to payment-sensitive paths.
 
-- ### VRF Isolation: VRFManager separates subscription + callbacks.
+-  VRF Isolation: VRFManager separates subscription + callbacks.
 
-- ### Emergency Functions: constrained and event-logged for auditability.
+-  Emergency Functions: constrained and event-logged for auditability.
 
-- ### Threat Model (high-level):
+-  Threat Model (high-level):
 
-- ### Malicious inputs → explicit validation with informative require messages.
+-  Malicious inputs → explicit validation with informative require messages.
 
-- ### VRF liveness → monitor LINK funding and operational alerts.
+-  VRF liveness → monitor LINK funding and operational alerts.
 
-- ### Fund lockups → defined recovery paths gated by roles (optional timelocks).
+- Fund lockups → defined recovery paths gated by roles (optional timelocks).
 
 # Tests & Coverage
 
-- ### Unit Tests (Foundry):
+-  Unit Tests (Foundry):
 
-- ### Factory deploy + raffle creation
+-  Factory deploy + raffle creation
 
-- ### Ticket purchase + validation
+-  Ticket purchase + validation
 
-- ### VRF integration (mock) + winner selection
+-  VRF integration (mock) + winner selection
 
-- ### Emergency paths + invalid states
+-  Emergency paths + invalid states
 
-- ### Gas checks for callback budget
+-  Gas checks for callback budget
 
+### Run
 ```
- Run:
-
 forge test -vvv
 ```
-- ### Limitations & Roadmap
+# Limitations
 
-- ### Current Limitations
+-  Single winner per raffle
 
-- ### Single winner per raffle
+-  Manual closing by the creator
 
-- ### Manual closing by the creator
+-  Requires funded VRF subscription (LINK)
 
-- ### Requires funded VRF subscription (LINK)
+# Roadmap
 
-## Roadmap
+-  Private raffles with whitelists
 
-### Private raffles with whitelists
+- Multiple winners / prize tiers
 
-### Multiple winners / prize tiers
+- Time-boxed raffles (auto-close by deadline)
 
-### Time-boxed raffles (auto-close by deadline)
+- Multi-chain support (Base, Abstract, Ronin EVM)
 
-### Multi-chain support (Base, Abstract, Ronin EVM)
-
-### Analytics dashboard (history, participation KPIs)
+-  Analytics dashboard (history, participation KPIs)
 
 # License & Author
 
-#License: MIT
-#Author: @pimmpi_ — GitHub
- #· Twitter
+- License: MIT
+- Author: @pimmpi_ — GitHub
+ - Twitter
 
 # References
 
-## Chainlink VRF v2: https://docs.chain.link/vrf/v2/introduction
+- Chainlink VRF v2: https://docs.chain.link/vrf/v2/introduction
 
-## Foundry Book: https://book.getfoundry.sh/
+- Foundry Book: https://book.getfoundry.sh/
 
-## Wagmi: https://wagmi.sh/
+- Wagmi: https://wagmi.sh/
 
-## Tailwind CSS: https://tailwindcss.com/
+- Tailwind CSS: https://tailwindcss.com/
 
-## Extras (optional but recruiter-friendly)
+- Extras (optional but recruiter-friendly)
 
-## .env.example
+- .env.example
 
 # Foundry / scripts
 ```
