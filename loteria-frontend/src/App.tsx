@@ -294,6 +294,15 @@ export default function App() {
           <span>© {new Date().getFullYear()} Lottery · Built by @pimmpi_ for web3 fellas</span>
           <div className="flex items-center gap-2">
             <a 
+              href="https://www.alva-p.xyz/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-indigo-400 hover:text-indigo-300 transition-colors underline"
+            >
+              Portfolio
+            </a>
+            <span className="text-gray-600">·</span>
+            <a 
               href="https://github.com/alva-p" 
               target="_blank" 
               rel="noopener noreferrer"
